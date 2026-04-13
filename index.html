@@ -774,6 +774,88 @@ function renderHome() {
     h += '<div style="text-align:right;min-width:120px;"><div style="font-size:11px;color:var(--text3);">資料期間</div><div style="font-size:14px;font-weight:700;">' + state.year + '年 ' + pl + '</div><div style="font-size:10px;color:var(--text3);">BS: ' + bs.date + '</div></div>';
     h += '</div>';
 
+
+    // === Section 0: 年度營收目標 ===
+    var annualTargets = {
+        '電商': 150000000,
+        '門市百貨': 17000000,
+        '團購': 5000000,
+        '經銷': 50000000
+    };
+    var annualTotal = 220000000;
+    var targetNetMargin = 0.05;
+    var targetNetProfit = annualTotal * targetNetMargin; // 11,000,000
+
+    // Calculate actual YTD progress from data
+    var allMonthsYTD = [];
+    for (var mi=1; mi<=12; mi++) allMonthsYTD.push(mi);
+    var ytdMonths = getActiveMonths(); // currently selected months
+    var ytdRev = getCompanyVal(ds, '營業收入總計', ytdMonths);
+    var ytdNi = getCompanyVal(ds, '淨利 (虧損)', ytdMonths);
+
+    // Channel YTD revenue mapping
+    var chTargetMap = {
+        '電商': ['蝦皮','MOMO','官網','Amazon','其他電商','PChome','Yahoo','東森','Line禮物','酷澎'],
+        '門市百貨': ['寶雅','全聯','新光三越','遠東SOGO','大潤發','家樂福','愛買','屈臣氏','康是美','其他門市'],
+        '團購': ['團購','團購通路'],
+        '經銷': ['經銷特約','經銷','特約']
+    };
+
+    h += '<div class="home-section"><div class="home-section-title">年度營收目標</div>';
+    // Overall target bar
+    var overallPct = annualTotal !== 0 ? ytdRev / annualTotal : 0;
+    var overallPctDisplay = (overallPct * 100).toFixed(1);
+    h += '<div style="background:var(--card);border-radius:10px;padding:20px;border:1px solid var(--border);margin-bottom:16px;">';
+    h += '<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:12px;">';
+    h += '<div><div style="font-size:12px;color:var(--text3);font-weight:600;">年度總目標</div>';
+    h += '<div style="font-size:28px;font-weight:800;color:var(--text1);">$' + formatCurrency(annualTotal) + '</div></div>';
+    h += '<div style="text-align:right;"><div style="font-size:12px;color:var(--text3);">累計實績 (' + pl + ')</div>';
+    h += '<div style="font-size:22px;font-weight:700;color:var(--accent);">$' + formatCurrency(ytdRev) + '</div></div>';
+    h += '</div>';
+    // Big progress bar
+    h += '<div style="position:relative;height:28px;background:var(--stripe);border-radius:14px;overflow:hidden;border:1px solid var(--border);">';
+    h += '<div style="height:100%;width:' + Math.min(overallPct * 100, 100).toFixed(1) + '%;background:linear-gradient(90deg,#5ECECE,#34b88a);border-radius:14px;transition:width 0.8s ease;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;">';
+    if (overallPct > 0.08) h += '<span style="font-size:12px;font-weight:700;color:#fff;">' + overallPctDisplay + '%</span>';
+    h += '</div>';
+    if (overallPct <= 0.08) h += '<span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:700;color:var(--text2);">' + overallPctDisplay + '%</span>';
+    h += '</div>';
+    h += '<div style="display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--text3);">';
+    h += '<span>淨利率目標: 5%　目標淨利: $' + formatCurrency(targetNetProfit) + '</span>';
+    h += '<span>實際淨利: $' + formatCurrency(ytdNi) + ' (' + (ytdRev !== 0 ? formatPercent(ytdNi / ytdRev) : '0%') + ')</span>';
+    h += '</div></div>';
+
+    // Channel targets grid
+    h += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">';
+    var targetKeys = ['電商','門市百貨','團購','經銷'];
+    var targetColors = ['#5ECECE','#e6a740','#8b6cc1','#5b8def'];
+    for (var ti = 0; ti < targetKeys.length; ti++) {
+        var tKey = targetKeys[ti];
+        var tTarget = annualTargets[tKey];
+        // Sum actual revenue for this channel group
+        var tActual = 0;
+        var chList = chTargetMap[tKey] || [];
+        for (var ci = 0; ci < chList.length; ci++) {
+            for (var aci = 0; aci < allChannels.length; aci++) {
+                if (allChannels[aci].indexOf(chList[ci]) >= 0 || chList[ci].indexOf(allChannels[aci]) >= 0) {
+                    tActual += getVal(ds, allChannels[aci], '營業收入總計', ytdMonths);
+                }
+            }
+        }
+        var tPct = tTarget !== 0 ? tActual / tTarget : 0;
+        h += '<div style="background:var(--card);border-radius:8px;padding:16px;border:1px solid var(--border);border-top:3px solid ' + targetColors[ti] + ';">';
+        h += '<div style="font-size:13px;font-weight:700;color:var(--text1);margin-bottom:8px;">' + tKey + '</div>';
+        h += '<div style="font-size:11px;color:var(--text3);">目標</div>';
+        h += '<div style="font-size:18px;font-weight:700;color:var(--text1);margin-bottom:4px;">$' + formatCurrency(tTarget) + '</div>';
+        h += '<div style="font-size:11px;color:var(--text3);">累計實績</div>';
+        h += '<div style="font-size:15px;font-weight:600;color:' + targetColors[ti] + ';">$' + formatCurrency(tActual) + '</div>';
+        h += '<div style="height:8px;background:var(--stripe);border-radius:4px;overflow:hidden;margin-top:8px;">';
+        h += '<div style="height:100%;width:' + Math.min(tPct * 100, 100).toFixed(1) + '%;background:' + targetColors[ti] + ';border-radius:4px;transition:width 0.6s ease;"></div></div>';
+        h += '<div style="font-size:11px;color:var(--text3);text-align:right;margin-top:4px;">' + (tPct * 100).toFixed(1) + '% 達成</div>';
+        h += '</div>';
+    }
+    h += '</div></div>';
+
+
     // === Section 1: 資金水位 ===
     h += '<div class="home-section"><div class="home-section-title">資金水位</div>';
     h += '<div class="grid">';
