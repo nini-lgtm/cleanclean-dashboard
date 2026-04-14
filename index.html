@@ -820,7 +820,7 @@ function renderHome() {
     if (overallPct <= 0.08) h += '<span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:700;color:var(--text2);">' + overallPctDisplay + '%</span>';
     h += '</div>';
     h += '<div style="display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--text3);">';
-    h += '<span>淨利率目標: 5%　目標淨利: $' + formatCurrency(targetNetProfit) + '</span>';
+    h += '<span>淨利率目標: 10%　目標淨利: $' + formatCurrency(targetNetProfit) + '</span>';
     h += '<span>實際淨利: $' + formatCurrency(ytdNi) + ' (' + (ytdRev !== 0 ? formatPercent(ytdNi / ytdRev) : '0%') + ')</span>';
     h += '</div></div>';
 
