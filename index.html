@@ -795,10 +795,10 @@ function renderHome() {
 
     // Channel YTD revenue mapping
     var chTargetMap = {
-        '電商': ['蝦皮','MOMO','官網','Amazon','其他電商','PChome','Yahoo','東森','Line禮物','酷澎'],
-        '門市百貨': ['寶雅','全聯','新光三越','遠東SOGO','大潤發','家樂福','愛買','屈臣氏','康是美','其他門市'],
-        '團購': ['團購','團購通路'],
-        '經銷': ['經銷特約','經銷','特約']
+        '電商': ['官網','蝦皮','蝦皮寄倉','MO店'],
+        '門市百貨': ['門市百貨'],
+        '團購': ['團購'],
+        '經銷': ['經銷特約']
     };
 
     h += '<div class="home-section"><div class="home-section-title">年度營收目標</div>';
@@ -836,7 +836,7 @@ function renderHome() {
         var chList = chTargetMap[tKey] || [];
         for (var ci = 0; ci < chList.length; ci++) {
             for (var aci = 0; aci < allChannels.length; aci++) {
-                if (allChannels[aci].indexOf(chList[ci]) >= 0 || chList[ci].indexOf(allChannels[aci]) >= 0) {
+                if (allChannels[aci] === chList[ci]) {
                     tActual += getVal(ds, allChannels[aci], '營業收入總計', ytdMonths);
                 }
             }
