@@ -827,42 +827,10 @@ function renderHome() {
     h += '</div></div>';
 
     // Channel targets grid
-    h += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">';
-    var targetKeys = ['電商','門市百貨','團購','經銷'];
-    var targetColors = ['#5ECECE','#e6a740','#8b6cc1','#5b8def'];
-    for (var ti = 0; ti < targetKeys.length; ti++) {
-        var tKey = targetKeys[ti];
-        var tTarget = annualTargets[tKey];
-        // Sum actual revenue for this channel group
-        var tActual = 0;
-        var chList = chTargetMap[tKey] || [];
-        for (var ci = 0; ci < chList.length; ci++) {
-            for (var aci = 0; aci < allChannels.length; aci++) {
-                if (allChannels[aci] === chList[ci]) {
-                    tActual += getVal(ds, allChannels[aci], '營業收入總計', ytdMonths);
-                }
-            }
-        }
-        var tPct = tTarget !== 0 ? tActual / tTarget : 0;
-        h += '<div style="background:var(--card);border-radius:8px;padding:16px;border:1px solid var(--border);border-top:3px solid ' + targetColors[ti] + ';">';
-        h += '<div style="font-size:13px;font-weight:700;color:var(--text1);margin-bottom:8px;">' + tKey + '</div>';
-        h += '<div style="font-size:11px;color:var(--text3);">目標</div>';
-        h += '<div style="font-size:18px;font-weight:700;color:var(--text1);margin-bottom:4px;">$' + formatCurrency(tTarget) + '</div>';
-        h += '<div style="font-size:11px;color:var(--text3);">累計實績</div>';
-        h += '<div style="font-size:15px;font-weight:600;color:' + targetColors[ti] + ';">$' + formatCurrency(tActual) + '</div>';
-        h += '<div style="height:8px;background:var(--stripe);border-radius:4px;overflow:hidden;margin-top:8px;">';
-        h += '<div style="height:100%;width:' + Math.min(tPct * 100, 100).toFixed(1) + '%;background:' + targetColors[ti] + ';border-radius:4px;transition:width 0.6s ease;"></div></div>';
-        h += '<div style="font-size:11px;color:var(--text3);text-align:right;margin-top:4px;">' + (tPct * 100).toFixed(1) + '% 達成</div>';
-        h += '</div>';
-    }
-    h += '</div></div>';
-
-
-    // === Section 1: 資金水位 ===
-    h += '<div class="home-section"><div class="home-section-title">資金水位</div>';
-    h += '<div class="grid">';
+    h += '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;">';
     h += '<div class="kpi-card"><div class="kpi-label">現金及存款</div><div class="kpi-value">$'+formatCurrency(cash)+'</div><div class="mini-label">現金 $'+formatCurrency(bs.assets['現金']||0)+' ｜ 銀行 $'+formatCurrency(bs.assets['銀行存款']||0)+'</div></div>';
-    h += '<div class="kpi-card info"><div class="kpi-label">客戶應收帳款</div><div class="kpi-value"></div>';
+    h += '<div class="kpi-card info"><div class="kpi-label">客戶應收帳款</div><div class="kpi-value">$'+formatCurrency(arReal)+'</div><div class="mini-label">實際待收款項</div></div>';
+    h += '<div class="kpi-card" style="border-top:3px solid #8b6cc1;"><div class="kpi-label" style="color:#8b6cc1;">暫估應收（老闆投資）</div><div class="kpi-value" style="color:#8b6cc1;">$'+formatCurrency(arEst)+'</div><div class="mini-label">非營運應收</div></div>';
     h += '<div class="kpi-card warning"><div class="kpi-label">應付帳款+費用</div><div class="kpi-value">$'+formatCurrency(ap+apExp)+'</div><div class="mini-label">應付 $'+formatCurrency(ap)+' ｜ 費用 $'+formatCurrency(apExp)+'</div></div>';
     h += '<div class="kpi-card '+(netFund>=0?'success':'danger')+'"><div class="kpi-label">淨可用資金</div><div class="kpi-value '+(netFund>=0?'text-success':'text-danger')+'">$'+formatCurrency(netFund)+'</div><div class="mini-label">現金+客戶應收-應付</div></div>';
     h += '</div>';
