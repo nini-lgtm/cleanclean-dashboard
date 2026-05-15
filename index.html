@@ -935,8 +935,7 @@ function renderHome() {
         ['股東權益', equity, ''],
         ['銀行借款', bankLoan, totalAssets!==0?formatPercent(bankLoan/totalAssets):''],
         ['商品存貨', inventory, totalAssets!==0?formatPercent(inventory/totalAssets):''],
-        ['客戶應收帳款', arReal, totalAssets!==0?formatPercent(arReal/totalAssets):''],
-        ['暫估應收(老闆投資)', arEst, totalAssets!==0?formatPercent(arEst/totalAssets):'']
+        ['應收帳款(含暫估)', ar, totalAssets!==0?formatPercent(ar/totalAssets):'']
     ];
     for (var si=0;si<summaryItems.length;si++) {
         var item = summaryItems[si];
